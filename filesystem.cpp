@@ -3,7 +3,6 @@
 #include <vector>
 using namespace std;
 
-// Create a handy alias so you don't have to type std::filesystem every time
 namespace fs = std::filesystem;
 
 std::vector<std::string> parseCommand(const std::string& input) {
@@ -27,21 +26,43 @@ void change_dir(fs::path *curr_path, string arg){
     fs::path temp = *(curr_path) / arg;
     temp = temp.lexically_normal();
 
-    if( !fs::exists(temp) || !fs::is_directory(temp) ){
-        cout << "Invalid argument\n";
+    if( !fs::exists(temp) ){
+        cout << "Directory doesnt exist\n";
+        return;
+    }
+
+    if(!fs::is_directory(temp)){
+        cout << "Requested path isn't a directory\n";
         return;
     }
 
     *curr_path = temp;
 }
 
+long recursive_size(fs::path file){
+    if(fs::is_regular_file(file)){
+        return (long) fs::file_size(file);
+    }
+
+    long res = 0;
+
+    for(auto const& dir_entry : fs::directory_iterator{file}){
+        res += recursive_size(dir_entry);
+    }
+
+    return res;
+}
+
 void print_size(fs::path curr_path, string file_name){
 
     fs::path file = curr_path / file_name;
 
-    if(fs::is_regular_file(file)){
-        cout << fs::file_size(file) << "B";
+    if( !fs::exists(file) ){
+        cout << "No such file: " << file.string() << "\n";
+        return;
     }
+
+    cout << recursive_size(file) << "B\n";    
 
 }
 
