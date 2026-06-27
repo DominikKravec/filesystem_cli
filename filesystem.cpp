@@ -1,6 +1,7 @@
 #include <iostream>
 #include <filesystem>
 #include <vector>
+#include <fstream>
 using namespace std;
 
 namespace fs = std::filesystem;
@@ -66,6 +67,25 @@ void print_size(fs::path curr_path, string file_name){
 
 }
 
+void make_file(fs::path curr_path, string file_name){
+
+    fs::path file_path = curr_path / file_name;
+
+    if( !fs::exists(file_path.parent_path()) ){
+        cout << "Can not create file because path doesn't exist\n";
+        return;
+    }
+
+    if( fs::exists(file_path) ){
+        cout << "File already exists\n";
+    }
+
+    ofstream file(file_path);
+
+    file.close();
+
+}
+
 int main() {
     cout << "--------------------------------------\nWelcome to the cli\n----------------------------------------------\n\n";
 
@@ -92,14 +112,29 @@ int main() {
             list_curr_path(currentPath);
         }else if(command == "cd"){
 
-            if(args.size() == 1) cout << "Missing argument";
+            if(args.size() == 1) {
+                cout << "Missing argument\n";
+                continue;
+            }
 
             change_dir(&currentPath, args[1]);
         }else if(command == "size"){
 
-            if(args.size() < 2) cout << "Missing argument";
+            if(args.size() < 2) {
+                cout << "Missing argument\n";
+                continue;
+            }
 
             print_size(currentPath, args[1]);
+        }else if(command == "mkfile"){
+
+            if(args.size() < 2) {
+                cout << "Missing argument\n";
+                continue;
+            }
+
+            make_file(currentPath, args[1]);
+
         }else{
             cout << "Unknown command, try help for guide\n";
         }
