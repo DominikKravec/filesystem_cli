@@ -113,6 +113,36 @@ void file_write(fs::path curr_path, string file_name, string input){
 
 }    
 
+void print_file(fs::path curr_path, string file_name){
+
+    fs::path file_path = curr_path / file_name;
+
+    if( !fs::exists(file_path) ){
+        cout << "File doesn't exist\n";
+        return;
+    }
+
+    ifstream file_stream(file_path);
+
+    if( !file_stream.is_open() ){
+        cout << "Error opening file\n";
+    }
+
+    char file_contents[100];
+
+    while( file_stream.read( file_contents, 100 ) ){
+        cout << file_contents;
+    }
+
+    if(file_stream.gcount() > 0){
+        cout << file_contents;
+    }
+
+    cout << "\n";
+    
+    file_stream.close();
+}
+
 int main() {
     cout << "--------------------------------------\nWelcome to the cli\n----------------------------------------------\n\n";
 
@@ -180,6 +210,16 @@ int main() {
             }
 
             file_write(currentPath, args[1], text_to_write);
+
+        }else if(command == "read"){
+
+            if(args.size() < 2) {
+                cout << "Missing argument\n";
+                continue;
+            }
+
+
+            print_file(currentPath, args[1]);
 
         }else{
             cout << "Unknown command, try help for guide\n";
