@@ -82,9 +82,36 @@ void make_file(fs::path curr_path, string file_name){
 
     ofstream file(file_path);
 
+    if( !file.is_open() ){
+        cout << "Error creating file\n";
+        return;
+    }
+
     file.close();
 
 }
+
+void file_write(fs::path curr_path, string file_name, string input){
+
+    fs::path file_path = curr_path / file_name;
+
+    if( !fs::exists(file_path) ){
+        cout << "File doesn't exist\n";    
+        return;
+    }
+
+    ofstream file_stream(file_path, ios::app);
+
+    if( !file_stream.is_open() ){
+        cout << "Can not open file\n";
+        return;
+    }
+
+    file_stream << input;
+
+    file_stream.close();
+
+}    
 
 int main() {
     cout << "--------------------------------------\nWelcome to the cli\n----------------------------------------------\n\n";
@@ -134,6 +161,25 @@ int main() {
             }
 
             make_file(currentPath, args[1]);
+
+        }else if(command == "fw"){
+
+            if(args.size() < 3) {
+                cout << "Missing argument\n";
+                continue;
+            }
+
+            string text_to_write = "";
+
+            for(int i = 2; i < args.size(); i++){
+                text_to_write += args[i];
+
+                if(i != args.size() - 1){
+                    text_to_write += " ";
+                }
+            }
+
+            file_write(currentPath, args[1], text_to_write);
 
         }else{
             cout << "Unknown command, try help for guide\n";
